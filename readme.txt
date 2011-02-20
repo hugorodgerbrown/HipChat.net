@@ -21,6 +21,9 @@ The core use case for this library is to allow developers to include 'bots' in c
 
 I have not, therefore, coded up the chat history or room details API methods.
 
+Usage:
+
+
 TODO:
 1. Proper validation of message XHTML to ensure it won't be rejected by the API
 2. Add in history/show methods

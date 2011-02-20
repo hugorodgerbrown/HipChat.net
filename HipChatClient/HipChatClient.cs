@@ -1,5 +1,9 @@
 ﻿using System;
 using System.Net;
+using System.Collections.Generic;
+using System.Xml;
+using System.Xml.Serialization;
+using System.IO;
 
 namespace HipChat
 {
@@ -93,7 +97,7 @@ namespace HipChat
         /// Sends a message to a chat room.
         /// </summary>
         /// <param name="message">The message to send - can contain some HTML and must be valid XHTML.</param>
-        public string SendMessage(string message, int room, string from)
+        public void SendMessage(string message, int room, string from)
         {
             #region validation
             if (string.IsNullOrEmpty(Token))
@@ -107,7 +111,9 @@ namespace HipChat
             #endregion validation
 
             HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create(FormatMessageUri(from, message));
-            return HttpUtils.CallApi(request);
+            // the API method currently only returns a fixed "sent" value, so there's no point returning it.
+            // if something went wrong we'll get an HipChatApiWebException that will contain the message
+            HttpUtils.CallApi(request);
         }
 
         /// <summary>
@@ -132,7 +138,7 @@ namespace HipChat
         /// <summary>
         /// Returns the list of available rooms. 
         /// </summary>
-        /// <returns>The raw JSON/XML API response</returns>
+        /// <returns>The raw JSON/XML API response (format is determined by Format property)</returns>
         public string ListRooms()
         {
             #region validation
@@ -142,6 +148,36 @@ namespace HipChat
 
             HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create(FormatRoomsListUri());
             return HttpUtils.CallApi(request);
+        }
+
+        /// <summary>
+        /// Yields each individual room as strongly-typed Entities.Room object
+        /// </summary>
+        /// <example>
+        /// foreach ( Room room in client.YieldRooms )
+        /// {
+        ///     // do something with room
+        /// }
+        /// </example>
+        public IEnumerable<Entities.Room> YieldRooms()
+        {
+            this.Format = ApiResponseFormat.XML;
+            XmlDocument x = new XmlDocument();
+            x.LoadXml(ListRooms());
+
+            // might be neater to deserialize the response using XmlSerializer 
+            foreach (XmlElement e in x.DocumentElement.ChildNodes)
+            {
+                Console.WriteLine(e.InnerText);
+
+                int id = int.Parse(e.SelectSingleNode("room_id").InnerText);
+                string name = e.SelectSingleNode("name").InnerText;
+                string topic = e.SelectSingleNode("topic").InnerText;
+                DateTime active = HttpUtils.ConvertUnixTime((e.SelectSingleNode("last_active").InnerText));
+                int owner = int.Parse(e.SelectSingleNode("owner_user_id").InnerText);
+
+                yield return new Entities.Room(id, name, topic, active, owner);
+            }
         }
 
         /// <summary>

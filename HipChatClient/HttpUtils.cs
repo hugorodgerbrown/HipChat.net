@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Net;
 using System.Text;
 
@@ -53,6 +54,28 @@ namespace HipChat
             {
                 throw new HipChatApiWebException(we, true);
             }
+        }
+
+        /// <summary>
+        /// Converts a UNIX timestamp (seconds since midnight 1-Jan-1970) into a .net DateTime
+        /// </summary>
+        /// <param name="seconds">The number of seconds since midnight 1-Jan-1970</param>
+        /// <returns></returns>
+        internal static DateTime ConvertUnixTime(int seconds)
+        {
+            DateTime time = new DateTime(1970, 1, 1, 0, 0, 0);
+            return time.AddSeconds(seconds);
+        }
+
+        /// <summary>
+        /// Converts a UNIX timestamp (seconds since midnight 1-Jan-1970) into a .net DateTime
+        /// </summary>
+        /// <param name="seconds">The number of seconds since midnight 1-Jan-1970</param>
+        /// <returns></returns>
+        internal static DateTime ConvertUnixTime(string seconds)
+        {
+            int sec = int.Parse(seconds);
+            return ConvertUnixTime(sec);
         }
     }
 }

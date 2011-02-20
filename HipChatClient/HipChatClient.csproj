@@ -42,8 +42,10 @@
     <Reference Include="System.Core" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Web" />
+    <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Entities\Room.cs" />
     <Compile Include="HipChatClient.cs" />
     <Compile Include="HipChatApiWebException.cs" />
     <Compile Include="HttpUtils.cs" />
