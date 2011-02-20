@@ -22,7 +22,14 @@ The core use case for this library is to allow developers to include 'bots' in c
 I have not, therefore, coded up the chat history or room details API methods.
 
 Usage:
+// to set up a local instance of the client
+var client = new HipChatClient(auth_token, room_id, name_of_sender);
+// send a message
+client.SendMessage("Hello World!");
 
+// for one-off use, there is a static method - NB this creates an instance internally, so 
+// only use when making one-off calls.
+HipChatClient.SendMessage(auth_token, room_id, name_of_sender, "Hello World!");
 
 TODO:
 1. Proper validation of message XHTML to ensure it won't be rejected by the API

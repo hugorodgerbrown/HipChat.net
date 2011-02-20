@@ -85,6 +85,12 @@ namespace HipChat
             this.room = room;
         }
 
+        public HipChatClient(string token, int room, string from)
+            : this(token, room)
+        {
+            this.sender = from;
+        }
+
         public HipChatClient(string token, int room, ApiResponseFormat format)
             : this(token, room)
         {
@@ -96,33 +102,44 @@ namespace HipChat
         /// <summary>
         /// Sends a message to a chat room.
         /// </summary>
-        /// <param name="message">The message to send - can contain some HTML and must be valid XHTML.</param>
-        public void SendMessage(string message, int room, string from)
+        public static void SendMessage(string token, int room, string from, string message)
         {
-            #region validation
-            if (string.IsNullOrEmpty(Token))
-                throw new InvalidOperationException("You must set the Token property before calling the SendMessage method.");
-            if (room == int.MinValue)
-                throw new InvalidOperationException("You must set the RoomId property before calling the SendMessage method.");
-            if (string.IsNullOrEmpty(from))
-                throw new InvalidOperationException("You must set the From property before calling the SendMessage method.");
-            if (string.IsNullOrEmpty(message))
-                throw new InvalidOperationException("You cannot send a blank message.");
-            #endregion validation
-
-            HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create(FormatMessageUri(from, message));
-            // the API method currently only returns a fixed "sent" value, so there's no point returning it.
-            // if something went wrong we'll get an HipChatApiWebException that will contain the message
-            HttpUtils.CallApi(request);
+            // create a local instance of HipChatClient, as then we get the validation
+            var client = new HipChatClient(token, room);
+            client.SendMessage(message, from);
         }
 
         /// <summary>
         /// Sends a message to a chat room.
         /// </summary>
         /// <param name="message">The message to send - can contain some HTML and must be valid XHTML.</param>
+        public void SendMessage(string message, int room, string from)
+        {
+            this.RoomId = room;
+            this.From = from;
+            SendMessage(message);
+        }
+
+        /// <summary>
+        /// Sends a message to a chat room.
+        /// </summary>
+        /// <param name="message">The message to send - can contain some HTML and must be valid XHTML.</param>
+        /// <param name="room">The id of the room to send the message to - sets the RoomId property.</param>
         public void SendMessage(string message, int room)
         {
-            SendMessage(message, room, this.From);
+            this.RoomId = room;
+            SendMessage(message);
+        }
+
+        /// <summary>
+        /// Sends a message to a chat room.
+        /// </summary>
+        /// <param name="message">The message to send - can contain some HTML and must be valid XHTML.</param>
+        /// <param name="from">The name of the sender - sets the From property.</param>
+        public void SendMessage(string message, string from)
+        {
+            this.From = from;
+            SendMessage(message);
         }
 
         /// <summary>
@@ -131,7 +148,22 @@ namespace HipChat
         /// <param name="message">The message to send - can contain some HTML and must be valid XHTML.</param>
         public void SendMessage(string message)
         {
-            SendMessage(message, this.RoomId, this.From);
+            #region validation
+            if (string.IsNullOrEmpty(Token))
+                throw new InvalidOperationException("You must set the Token property before calling the SendMessage method.");
+            if (RoomId == int.MinValue)
+                throw new InvalidOperationException("You must set the RoomId property before calling the SendMessage method.");
+            if (string.IsNullOrEmpty(From))
+                throw new InvalidOperationException("You must set the From property before calling the SendMessage method.");
+            if (string.IsNullOrEmpty(message))
+                throw new InvalidOperationException("You cannot send a blank message.");
+            #endregion validation
+
+            HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create(FormatMessageUri(message));
+            request.Method = "POST";
+            // the API method currently only returns a fixed "sent" value, so there's no point returning it.
+            // if something went wrong we'll get an HipChatApiWebException that will contain the message
+            HttpUtils.CallApi(request);
         }
 
 
@@ -183,14 +215,14 @@ namespace HipChat
         /// <summary>
         /// Formats the URI for the /rooms/message API (http://www.hipchat.com/docs/api/method/rooms/message)
         /// </summary>
-        private string FormatMessageUri(string sender, string message)
+        private string FormatMessageUri(string message)
         {
             var url = string.Format(@"https://api.hipchat.com/v1/rooms/message?auth_token={0}&room_id={1}&format={2}&notify={3}&from={4}&message={5}",
                 this.Token,
                 this.RoomId,
                 this.Format.ToString().ToLower(),
                 this.NotifyAsChar,
-                sender,
+                this.From,
                 message);
             return Uri.EscapeUriString(url);
         }
