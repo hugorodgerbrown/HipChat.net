@@ -13,6 +13,7 @@ namespace HipChat
     /// <remarks>
     /// The HipChat API will return an HTTP 4XX in the case of an exception, and will put the error into the body of the response. 
     /// This exception extracts the relevant information and presents in a more logical format.
+    /// More details here - https://www.hipchat.com/docs/api/response_codes
     /// </remarks>
     public class HipChatApiWebException: ApplicationException
     {

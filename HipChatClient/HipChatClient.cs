@@ -175,7 +175,7 @@ namespace HipChat
         {
             #region validation
             if (string.IsNullOrEmpty(Token))
-                throw new InvalidOperationException("You must set the Token property before calling the SendMessage method.");
+                throw new InvalidOperationException("You must set the Token property before calling the API.");
             #endregion validation
 
             HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create(FormatRoomsListUri());
