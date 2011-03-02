@@ -156,9 +156,9 @@ namespace HipChat
             if (string.IsNullOrEmpty(From))
                 throw new InvalidOperationException("You must set the From property before calling the SendMessage method.");
             if (string.IsNullOrEmpty(message))
-                throw new ArgumentException("You cannot send a blank message.", message);
+                throw new ArgumentException("You cannot send a blank message.", "message");
             if (message.Length > 5000)
-                throw new ArgumentException("Message must be less than 5000 characters. See https://www.hipchat.com/docs/api/method/rooms/message for more details.", message);
+                throw new ArgumentException("Message must be less than 5000 characters. See https://www.hipchat.com/docs/api/method/rooms/message for more details.", "message");
             #endregion validation
 
             HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create(FormatMessageUri(message));
@@ -170,7 +170,7 @@ namespace HipChat
 
 
         /// <summary>
-        /// Returns the list of available rooms. 
+        /// Returns the list of available rooms as XML/JSON 
         /// </summary>
         /// <returns>The raw JSON/XML API response (format is determined by Format property)</returns>
         public string ListRooms()
@@ -182,6 +182,20 @@ namespace HipChat
 
             HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create(FormatRoomsListUri());
             return HttpUtils.CallApi(request);
+        }
+
+        /// <summary>
+        /// Returns the list of available rooms as native C# objects
+        /// </summary>
+        /// <returns>A List<> containing strongly-typed Entities.Room objects</returns>
+        public List<Entities.Room> ListRoomsAsNativeObjects()
+        {
+            List<Entities.Room> rooms = new List<Entities.Room>();
+            foreach(Entities.Room room in YieldRooms())
+            {
+                rooms.Add(room);
+            }
+            return rooms;
         }
 
         /// <summary>

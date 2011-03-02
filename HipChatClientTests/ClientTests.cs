@@ -1,14 +1,15 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Text;
+using System.Collections.Generic;
 
 namespace HipChatClientTests
 {
     [TestClass]
     public class TestHipChatClient
     {
-        const string TEST_AUTH_TOKEN = "";
-        const int TEST_ROOM_ID = 0;
+        const string TEST_AUTH_TOKEN = "f3140d6be33b3c528184ee5080db93";
+        const int TEST_ROOM_ID = 12687;
         const string TEST_SENDER = "UnitTests";
 
         [TestMethod]
@@ -55,6 +56,15 @@ namespace HipChatClientTests
             var xml = client.ListRooms();
             // not the most scientific test, but it's sunday night
             Assert.IsTrue(xml.StartsWith("<?xml version=\"1.0\" encoding=\"utf-8\"?>"));
+        }
+
+        [TestMethod]
+        public void TestListRoomsAsNativeObjects()
+        {
+            var client = new HipChat.HipChatClient(TEST_AUTH_TOKEN, HipChat.HipChatClient.ApiResponseFormat.XML);
+            var rooms = client.ListRoomsAsNativeObjects();
+            Assert.IsInstanceOfType(rooms, typeof(List<HipChat.Entities.Room>));
+            Assert.AreEqual(4, rooms.Count);
         }
 
         [TestMethod]
