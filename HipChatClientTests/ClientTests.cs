@@ -80,7 +80,7 @@ namespace HipChatClientTests
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentException))]
-        public void TestSendMessageException1()
+        public void TestSendMessageEmptyException()
         {
             var client = new HipChat.HipChatClient(TEST_AUTH_TOKEN);
             client.SendMessage("", TEST_ROOM_ID, TEST_SENDER);
@@ -88,7 +88,7 @@ namespace HipChatClientTests
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentException))]
-        public void TestSendMessageException2()
+        public void TestSendMessageTooLongException()
         {
             var client = new HipChat.HipChatClient(TEST_AUTH_TOKEN);
             var s = new StringBuilder();
