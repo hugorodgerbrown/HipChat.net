@@ -1,4 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
+using System.Text;
 
 namespace HipChatClientTests
 {
@@ -65,7 +67,28 @@ namespace HipChatClientTests
         public void TestSendMessage3()
         {
             var client = new HipChat.HipChatClient(TEST_AUTH_TOKEN);
-            client.SendMessage("TestSendMessage3",TEST_ROOM_ID, TEST_SENDER);
+            client.SendMessage("TestSendMessage3", TEST_ROOM_ID, TEST_SENDER);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void TestSendMessageException1()
+        {
+            var client = new HipChat.HipChatClient(TEST_AUTH_TOKEN);
+            client.SendMessage("", TEST_ROOM_ID, TEST_SENDER);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void TestSendMessageException2()
+        {
+            var client = new HipChat.HipChatClient(TEST_AUTH_TOKEN);
+            var s = new StringBuilder();
+            while (s.Length <= 5000)
+            {
+                s.Append("The quick brown fox jumped over the lazy dog");
+            }
+            client.SendMessage(s.ToString(), TEST_ROOM_ID, TEST_SENDER);
         }
 
         [TestMethod]

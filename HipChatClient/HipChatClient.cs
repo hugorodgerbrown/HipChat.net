@@ -156,7 +156,9 @@ namespace HipChat
             if (string.IsNullOrEmpty(From))
                 throw new InvalidOperationException("You must set the From property before calling the SendMessage method.");
             if (string.IsNullOrEmpty(message))
-                throw new InvalidOperationException("You cannot send a blank message.");
+                throw new ArgumentException("You cannot send a blank message.", message);
+            if (message.Length > 5000)
+                throw new ArgumentException("Message must be less than 5000 characters. See https://www.hipchat.com/docs/api/method/rooms/message for more details.", message);
             #endregion validation
 
             HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create(FormatMessageUri(message));
@@ -186,7 +188,7 @@ namespace HipChat
         /// Yields each individual room as strongly-typed Entities.Room object
         /// </summary>
         /// <example>
-        /// foreach ( Room room in client.YieldRooms )
+        /// foreach ( Room room in client.YieldRooms() )
         /// {
         ///     // do something with room
         /// }
