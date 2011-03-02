@@ -32,6 +32,14 @@ namespace HipChatClientTests
         }
 
         [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void TestSenderLengthExecption()
+        {
+            var client = new HipChat.HipChatClient("X");
+            client.From = "ABCDEFGHIJKLMNOP";
+        }
+
+        [TestMethod]
         public void TestListRoomsAsJson()
         {
             var client = new HipChat.HipChatClient(TEST_AUTH_TOKEN, HipChat.HipChatClient.ApiResponseFormat.JSON);
