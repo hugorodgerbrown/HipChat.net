@@ -114,5 +114,14 @@ namespace HipChatClientTests
         {
             HipChat.HipChatClient.SendMessage(TEST_AUTH_TOKEN, TEST_ROOM_ID, "UnitTests", "TestSendMessageStatic");
         }
+
+        [TestMethod]
+        public void TestGetRoomHistory()
+        {
+            var client = new HipChat.HipChatClient(TEST_AUTH_TOKEN, TEST_ROOM_ID);
+            var s = client.RoomHistory(DateTime.Today.AddDays(-1));
+            System.Diagnostics.Trace.WriteLine(s.Substring(0, 50));
+            Assert.IsNotNull(s);
+        }
     }
 }

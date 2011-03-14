@@ -189,7 +189,7 @@ namespace HipChat
         public List<Entities.Room> ListRoomsAsNativeObjects()
         {
             List<Entities.Room> rooms = new List<Entities.Room>();
-            foreach(Entities.Room room in YieldRooms())
+            foreach (Entities.Room room in YieldRooms())
             {
                 rooms.Add(room);
             }
@@ -227,6 +227,25 @@ namespace HipChat
         }
 
         /// <summary>
+        /// Returns the chat history of a single room on a single day.
+        /// </summary>
+        /// <returns>The raw JSON/XML API response (format is determined by Format property)</returns>
+        public string RoomHistory(DateTime date)
+        {
+            #region validation
+            if (string.IsNullOrEmpty(Token))
+                throw new InvalidOperationException("You must set the Token property before calling the API.");
+            if (RoomId == int.MinValue)
+                throw new InvalidOperationException("You must set the RoomId property before calling the SendMessage method.");
+            if (date == null)
+                throw new ArgumentNullException("date", "You must pass in a valid date for the history API.");
+            #endregion validation
+
+            HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create(FormatRoomsHistoryUri(date));
+            return HttpUtils.CallApi(request);
+        }
+
+        /// <summary>
         /// Formats the URI for the /rooms/message API (http://www.hipchat.com/docs/api/method/rooms/message)
         /// </summary>
         private string FormatMessageUri(string message)
@@ -246,11 +265,23 @@ namespace HipChat
         /// </summary>
         private string FormatRoomsListUri()
         {
-            return string.Format("https://api.hipchat.com/v1/rooms/list?format={0}&auth_token={1}", 
-                this.Format.ToString().ToLower(), 
+            return string.Format("https://api.hipchat.com/v1/rooms/list?format={0}&auth_token={1}",
+                this.Format.ToString().ToLower(),
                 this.Token);
         }
 
-
+        /// <summary>
+        /// Formats the URI for the /rooms/history API (http://www.hipchat.com/docs/api/method/rooms/history)
+        /// </summary>
+        /// <param name="date">The API requires a date - so this is it :-)</param>
+        /// <returns>The URL to use</returns>
+        private string FormatRoomsHistoryUri(DateTime date)
+        {
+            return string.Format("https://api.hipchat.com/v1/rooms/history?format={0}&auth_token={1}&room_id={2}&date={3}",
+                this.Format.ToString().ToLower(),
+                this.Token,
+                this.RoomId,
+                date.ToString("yyyy-MM-dd"));
+        }
     }
 }
