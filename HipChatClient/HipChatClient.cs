@@ -42,7 +42,7 @@ namespace HipChat
         /// <summary>
         /// The API authentication token - this is managed through the HipChat account admin panel.
         /// </summary>
-        public string Token { get { return token; } set { Token = value; } }
+        public string Token { get { return token; } set { token = value; } }
 
         /// <summary>
         /// The numeric id of the room to which to send a message
@@ -66,6 +66,8 @@ namespace HipChat
         }
 
         #region constructors
+        public HipChatClient() { }
+
         public HipChatClient(string token)
         {
             this.token = token;

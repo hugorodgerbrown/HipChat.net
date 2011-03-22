@@ -2,21 +2,34 @@
 using System;
 using System.Text;
 using System.Collections.Generic;
+using Castle.Windsor;
+using HipChat;
+using Castle.Windsor.Installer;
 
 namespace HipChatClientTests
 {
     [TestClass]
     public class TestHipChatClient
     {
-        const string TEST_AUTH_TOKEN = "";
-        const int TEST_ROOM_ID = 0;
+        const string TEST_AUTH_TOKEN = "f3140d6be33b3c528184ee5080db93";
+        const int TEST_ROOM_ID = 12687;
         const string TEST_SENDER = "UnitTests";
+
+        [TestMethod]
+        public void TestWindsorInstaller()
+        {
+            IWindsorContainer container;
+            container = new WindsorContainer();
+            container.Install(new HipChatClientInstaller());
+            var client = container.Resolve<HipChatClient>("ChatClient1");
+            client.SendMessage("TestWindsorInstaller");
+        }
 
         [TestMethod]
         [ExpectedException(typeof(HipChat.HipChatApiWebException))]
         public void TestAuthenticationException()
         {
-            var client = new HipChat.HipChatClient("X");
+            var client = new HipChatClient(){Token="XYZ", RoomId=123};
             client.ListRooms();
         }
 
@@ -64,7 +77,7 @@ namespace HipChatClientTests
             var client = new HipChat.HipChatClient(TEST_AUTH_TOKEN, HipChat.HipChatClient.ApiResponseFormat.XML);
             var rooms = client.ListRoomsAsNativeObjects();
             Assert.IsInstanceOfType(rooms, typeof(List<HipChat.Entities.Room>));
-            Assert.AreEqual(4, rooms.Count);
+            Assert.AreEqual(3, rooms.Count);
         }
 
         [TestMethod]
@@ -77,7 +90,7 @@ namespace HipChatClientTests
         [TestMethod]
         public void TestSendMessage2()
         {
-            var client = new HipChat.HipChatClient(TEST_AUTH_TOKEN,TEST_ROOM_ID);
+            var client = new HipChat.HipChatClient(TEST_AUTH_TOKEN, TEST_ROOM_ID);
             client.SendMessage("TestSendMessage2", TEST_SENDER);
         }
 
@@ -120,7 +133,7 @@ namespace HipChatClientTests
         {
             var client = new HipChat.HipChatClient(TEST_AUTH_TOKEN, TEST_ROOM_ID);
             var s = client.RoomHistory(DateTime.Today.AddDays(-1));
-            System.Diagnostics.Trace.WriteLine(s.Substring(0, 50));
+            System.Diagnostics.Trace.WriteLine(s.Length > 50 ? s.Substring(0, 50) : s);
             Assert.IsNotNull(s);
         }
     }
