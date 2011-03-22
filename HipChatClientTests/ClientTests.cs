@@ -11,15 +11,14 @@ namespace HipChatClientTests
     [TestClass]
     public class TestHipChatClient
     {
-        const string TEST_AUTH_TOKEN = "f3140d6be33b3c528184ee5080db93";
-        const int TEST_ROOM_ID = 12687;
+        const string TEST_AUTH_TOKEN = "ABC";
+        const int TEST_ROOM_ID = 123;
         const string TEST_SENDER = "UnitTests";
 
         [TestMethod]
         public void TestWindsorInstaller()
         {
-            IWindsorContainer container;
-            container = new WindsorContainer();
+            IWindsorContainer container = new WindsorContainer();
             container.Install(new HipChatClientInstaller());
             var client = container.Resolve<HipChatClient>("ChatClient1");
             client.SendMessage("TestWindsorInstaller");
