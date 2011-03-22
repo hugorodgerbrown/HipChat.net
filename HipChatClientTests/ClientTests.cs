@@ -11,17 +11,14 @@ namespace HipChatClientTests
     [TestClass]
     public class TestHipChatClient
     {
-        const string TEST_AUTH_TOKEN = "ABC";
-        const int TEST_ROOM_ID = 123;
-        const string TEST_SENDER = "UnitTests";
+        private static HipChatClient DefaultClient;
 
-        [TestMethod]
-        public void TestWindsorInstaller()
+        [ClassInitialize]
+        public static void Initialize(TestContext context)
         {
             IWindsorContainer container = new WindsorContainer();
             container.Install(new HipChatClientInstaller());
-            var client = container.Resolve<HipChatClient>("ChatClient1");
-            client.SendMessage("TestWindsorInstaller");
+            DefaultClient = container.Resolve<HipChatClient>("ChatClient1");
         }
 
         [TestMethod]
@@ -35,7 +32,7 @@ namespace HipChatClientTests
         [TestMethod]
         public void TestYieldRooms()
         {
-            var client = new HipChat.HipChatClient(TEST_AUTH_TOKEN);
+            var client = new HipChat.HipChatClient(DefaultClient.Token);
             var x = 0;
             foreach (HipChat.Entities.Room room in client.YieldRooms())
             {
@@ -55,7 +52,7 @@ namespace HipChatClientTests
         [TestMethod]
         public void TestListRoomsAsJson()
         {
-            var client = new HipChat.HipChatClient(TEST_AUTH_TOKEN, HipChat.HipChatClient.ApiResponseFormat.JSON);
+            var client = new HipChat.HipChatClient(DefaultClient.Token, HipChat.HipChatClient.ApiResponseFormat.JSON);
             var json = client.ListRooms();
             // not the most scientific test, but it's sunday night
             Assert.IsTrue(json.Contains("{"));
@@ -64,7 +61,7 @@ namespace HipChatClientTests
         [TestMethod]
         public void TestListRoomsAsXml()
         {
-            var client = new HipChat.HipChatClient(TEST_AUTH_TOKEN, HipChat.HipChatClient.ApiResponseFormat.XML);
+            var client = new HipChat.HipChatClient(DefaultClient.Token, HipChat.HipChatClient.ApiResponseFormat.XML);
             var xml = client.ListRooms();
             // not the most scientific test, but it's sunday night
             Assert.IsTrue(xml.StartsWith("<?xml version=\"1.0\" encoding=\"utf-8\"?>"));
@@ -73,7 +70,7 @@ namespace HipChatClientTests
         [TestMethod]
         public void TestListRoomsAsNativeObjects()
         {
-            var client = new HipChat.HipChatClient(TEST_AUTH_TOKEN, HipChat.HipChatClient.ApiResponseFormat.XML);
+            var client = new HipChat.HipChatClient(DefaultClient.Token, HipChat.HipChatClient.ApiResponseFormat.XML);
             var rooms = client.ListRoomsAsNativeObjects();
             Assert.IsInstanceOfType(rooms, typeof(List<HipChat.Entities.Room>));
             Assert.AreEqual(3, rooms.Count);
@@ -82,55 +79,55 @@ namespace HipChatClientTests
         [TestMethod]
         public void TestSendMessage1()
         {
-            var client = new HipChat.HipChatClient(TEST_AUTH_TOKEN, TEST_ROOM_ID, "UnitTests");
+            var client = new HipChat.HipChatClient(DefaultClient.Token, DefaultClient.RoomId, DefaultClient.From);
             client.SendMessage("TestSendMessage1");
         }
 
         [TestMethod]
         public void TestSendMessage2()
         {
-            var client = new HipChat.HipChatClient(TEST_AUTH_TOKEN, TEST_ROOM_ID);
-            client.SendMessage("TestSendMessage2", TEST_SENDER);
+            var client = new HipChat.HipChatClient(DefaultClient.Token, DefaultClient.RoomId);
+            client.SendMessage("TestSendMessage2", DefaultClient.From);
         }
 
         [TestMethod]
         public void TestSendMessage3()
         {
-            var client = new HipChat.HipChatClient(TEST_AUTH_TOKEN);
-            client.SendMessage("TestSendMessage3", TEST_ROOM_ID, TEST_SENDER);
+            var client = new HipChat.HipChatClient(DefaultClient.Token);
+            client.SendMessage("TestSendMessage3", DefaultClient.RoomId, DefaultClient.From);
         }
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentException))]
         public void TestSendMessageEmptyException()
         {
-            var client = new HipChat.HipChatClient(TEST_AUTH_TOKEN);
-            client.SendMessage("", TEST_ROOM_ID, TEST_SENDER);
+            var client = new HipChat.HipChatClient(DefaultClient.Token);
+            client.SendMessage("", DefaultClient.RoomId, DefaultClient.From);
         }
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentException))]
         public void TestSendMessageTooLongException()
         {
-            var client = new HipChat.HipChatClient(TEST_AUTH_TOKEN);
+            var client = new HipChat.HipChatClient(DefaultClient.Token);
             var s = new StringBuilder();
             while (s.Length <= 5000)
             {
                 s.Append("The quick brown fox jumped over the lazy dog");
             }
-            client.SendMessage(s.ToString(), TEST_ROOM_ID, TEST_SENDER);
+            client.SendMessage(s.ToString(), DefaultClient.RoomId, DefaultClient.From);
         }
 
         [TestMethod]
         public void TestSendMessageStatic()
         {
-            HipChat.HipChatClient.SendMessage(TEST_AUTH_TOKEN, TEST_ROOM_ID, "UnitTests", "TestSendMessageStatic");
+            HipChat.HipChatClient.SendMessage(DefaultClient.Token, DefaultClient.RoomId, DefaultClient.From, "TestSendMessageStatic");
         }
 
         [TestMethod]
         public void TestGetRoomHistory()
         {
-            var client = new HipChat.HipChatClient(TEST_AUTH_TOKEN, TEST_ROOM_ID);
+            var client = new HipChat.HipChatClient(DefaultClient.Token, DefaultClient.RoomId);
             var s = client.RoomHistory(DateTime.Today.AddDays(-1));
             System.Diagnostics.Trace.WriteLine(s.Length > 50 ? s.Substring(0, 50) : s);
             Assert.IsNotNull(s);
