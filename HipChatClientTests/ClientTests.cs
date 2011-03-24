@@ -11,15 +11,16 @@ namespace HipChatClientTests
     [TestClass]
     public class TestHipChatClient
     {
-        const string TEST_AUTH_TOKEN = "f3140d6be33b3c528184ee5080db93";
-        const int TEST_ROOM_ID = 12687;
+        const string TEST_AUTH_TOKEN = "ABC";
+        const int TEST_ROOM_ID = 123;
         const string TEST_SENDER = "UnitTests";
+
+
 
         [TestMethod]
         public void TestWindsorInstaller()
         {
-            IWindsorContainer container;
-            container = new WindsorContainer();
+            IWindsorContainer container = new WindsorContainer();
             container.Install(new HipChatClientInstaller());
             var client = container.Resolve<HipChatClient>("ChatClient1");
             client.SendMessage("TestWindsorInstaller");
@@ -48,6 +49,14 @@ namespace HipChatClientTests
         [TestMethod]
         [ExpectedException(typeof(ArgumentException))]
         public void TestSenderLengthExecption()
+        {
+            var client = new HipChat.HipChatClient("X");
+            client.AutoTruncate = false;
+            client.From = "ABCDEFGHIJKLMNOP";
+        }
+
+        [TestMethod]
+        public void TestSenderLengthTruncate()
         {
             var client = new HipChat.HipChatClient("X");
             client.From = "ABCDEFGHIJKLMNOP";
@@ -110,10 +119,22 @@ namespace HipChatClientTests
         }
 
         [TestMethod]
+        public void TestSendMessageTruncate()
+        {
+            var client = new HipChat.HipChatClient(TEST_AUTH_TOKEN);
+            var s = new StringBuilder();
+            while (s.Length <= 5000)
+            {
+                s.Append("The quick brown fox jumped over the lazy dog");
+            }
+            client.SendMessage(s.ToString(), TEST_ROOM_ID, TEST_SENDER);
+        }
+
+        [TestMethod]
         [ExpectedException(typeof(ArgumentException))]
         public void TestSendMessageTooLongException()
         {
-            var client = new HipChat.HipChatClient(TEST_AUTH_TOKEN);
+            var client = new HipChat.HipChatClient(TEST_AUTH_TOKEN) { AutoTruncate = false };
             var s = new StringBuilder();
             while (s.Length <= 5000)
             {

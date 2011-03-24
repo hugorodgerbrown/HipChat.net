@@ -20,6 +20,11 @@ namespace HipChat
         private string token = string.Empty;
 
         /// <summary>
+        /// If True, Sender and Message values are automatically truncated if they are too long.
+        /// </summary>
+        public bool AutoTruncate { get; set; }
+
+        /// <summary>
         /// Used to determine the format of the API response (JSON is default)
         /// </summary>
         public enum ApiResponseFormat { JSON = 0, XML = 1 }
@@ -59,42 +64,52 @@ namespace HipChat
             {
                 if (value.Length > 15)
                 {
-                    throw new ArgumentException("Sender name must be 15 characters or less.", "Sender");
+                    if (AutoTruncate)
+                    {
+                        sender = value.Substring(0, 15);
+                    }
+                    else
+                    {
+                        throw new ArgumentException("Sender name must be 15 characters or less.", "Sender");
+                    }
                 }
-                sender = value;
+                else
+                {
+                    sender = value;
+                }
             }
         }
 
         #region constructors
-        public HipChatClient() { }
+        public HipChatClient() { AutoTruncate = true; }
 
-        public HipChatClient(string token)
+        public HipChatClient(string token): this()
         {
-            this.token = token;
+            this.Token = token;
         }
 
         public HipChatClient(string token, ApiResponseFormat format)
             : this(token)
         {
-            this.format = format;
+            this.Format = format;
         }
 
         public HipChatClient(string token, int room)
             : this(token)
         {
-            this.room = room;
+            this.RoomId = room;
         }
 
         public HipChatClient(string token, int room, string from)
             : this(token, room)
         {
-            this.sender = from;
+            this.From = from;
         }
 
         public HipChatClient(string token, int room, ApiResponseFormat format)
             : this(token, room)
         {
-            this.format = format;
+            this.Format = format;
         }
 
         #endregion constructors
@@ -158,7 +173,14 @@ namespace HipChat
             if (string.IsNullOrEmpty(message))
                 throw new ArgumentException("You cannot send a blank message.", "message");
             if (message.Length > 5000)
-                throw new ArgumentException("Message must be less than 5000 characters. See https://www.hipchat.com/docs/api/method/rooms/message for more details.", "message");
+                if (AutoTruncate)
+                {
+                    message = message.Substring(0, 4997) + "...";
+                }
+                else
+                {
+                    throw new ArgumentException("Message must be less than 5000 characters. See https://www.hipchat.com/docs/api/method/rooms/message for more details.", "message");
+                }
             #endregion validation
 
             HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create(FormatMessageUri(message));
