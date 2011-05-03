@@ -5,20 +5,22 @@ using System.Collections.Generic;
 using Castle.Windsor;
 using HipChat;
 using Castle.Windsor.Installer;
+using System.Reflection;
 
 namespace HipChatClientTests
 {
     [TestClass]
     public class TestHipChatClient
     {
-        private HipChatClient defaultClient;
+        private static HipChatClient defaultClient;
 
-        [TestInitialize]
-        public void TestWindsorInstaller()
+        [ClassInitialize]
+        public static void TestWindsorInstaller(TestContext context)
         {
             IWindsorContainer container = new WindsorContainer();
             container.Install(new HipChatClientInstaller());
             defaultClient = container.Resolve<HipChatClient>("ChatClient");
+            defaultClient.From += defaultClient.GetHashCode().ToString();
             defaultClient.SendMessage("TestWindsorInstaller");
         }
 
@@ -82,29 +84,56 @@ namespace HipChatClientTests
             var client = new HipChat.HipChatClient(defaultClient.Token, HipChat.HipChatClient.ApiResponseFormat.XML);
             var rooms = client.ListRoomsAsNativeObjects();
             Assert.IsInstanceOfType(rooms, typeof(List<HipChat.Entities.Room>));
-            Assert.AreEqual(3, rooms.Count);
+            Assert.IsTrue(rooms.Count > 0); //HACK: the number of rooms is variable, so just check that it's greater than 0 - bit if a hack
         }
 
         [TestMethod]
-        public void TestSendMessage1()
+        public void TestSendMessage_Message()
         {
-            var client = new HipChat.HipChatClient(defaultClient.Token, defaultClient.RoomId, "UnitTests");
-            client.SendMessage("TestSendMessage1");
+            var client = new HipChat.HipChatClient(defaultClient.Token, defaultClient.RoomId, defaultClient.From);
+            client.SendMessage(MethodBase.GetCurrentMethod().Name);
         }
 
         [TestMethod]
-        public void TestSendMessage2()
+        public void TestSendMessage_Message_From()
         {
             var client = new HipChat.HipChatClient(defaultClient.Token, defaultClient.RoomId);
-            client.SendMessage("TestSendMessage2", defaultClient.From);
+            client.SendMessage(MethodBase.GetCurrentMethod().Name, defaultClient.From);
         }
 
         [TestMethod]
-        public void TestSendMessage3()
+        public void TestSendMessage_Message_From_Notify()
+        {
+            var client = new HipChat.HipChatClient(defaultClient.Token, defaultClient.RoomId);
+            client.SendMessage(MethodBase.GetCurrentMethod().Name, defaultClient.From, true);
+        }
+
+        [TestMethod]
+        public void TestSendMessage_Message_Room_From()
         {
             var client = new HipChat.HipChatClient(defaultClient.Token);
-            client.SendMessage("TestSendMessage3", defaultClient.RoomId, defaultClient.From);
+            client.SendMessage(MethodBase.GetCurrentMethod().Name, defaultClient.RoomId, defaultClient.From);
         }
+
+        [TestMethod]
+        public void TestSendMessage_Message_Room_From_Notify()
+        {
+            var client = new HipChat.HipChatClient(defaultClient.Token);
+            client.SendMessage(MethodBase.GetCurrentMethod().Name, defaultClient.RoomId, defaultClient.From, true);
+        }
+
+        [TestMethod]
+        public void TestStaticSendMessage_Message_Room_From()
+        {
+            HipChat.HipChatClient.SendMessage(defaultClient.Token, defaultClient.RoomId, defaultClient.From, MethodBase.GetCurrentMethod().Name);
+        }
+
+        [TestMethod]
+        public void TestStaticSendMessage_Message_Room_From_Notify()
+        {
+            HipChat.HipChatClient.SendMessage(defaultClient.Token, defaultClient.RoomId, defaultClient.From, MethodBase.GetCurrentMethod().Name, true);
+        }
+
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentException))]
@@ -118,12 +147,7 @@ namespace HipChatClientTests
         public void TestSendMessageTruncate()
         {
             var client = new HipChat.HipChatClient(defaultClient.Token);
-            var s = new StringBuilder();
-            while (s.Length <= 5000)
-            {
-                s.Append("The quick brown fox jumped over the lazy dog");
-            }
-            client.SendMessage(s.ToString(), defaultClient.RoomId, defaultClient.From);
+            client.SendMessage(GetReallyLongMessage(MethodBase.GetCurrentMethod().Name, 5000), defaultClient.RoomId, defaultClient.From);
         }
 
         [TestMethod]
@@ -131,27 +155,32 @@ namespace HipChatClientTests
         public void TestSendMessageTooLongException()
         {
             var client = new HipChat.HipChatClient(defaultClient.Token) { AutoTruncate = false };
-            var s = new StringBuilder();
-            while (s.Length <= 5000)
-            {
-                s.Append("The quick brown fox jumped over the lazy dog");
-            }
-            client.SendMessage(s.ToString(), defaultClient.RoomId, defaultClient.From);
-        }
-
-        [TestMethod]
-        public void TestSendMessageStatic()
-        {
-            HipChat.HipChatClient.SendMessage(defaultClient.Token, defaultClient.RoomId, "UnitTests", "TestSendMessageStatic");
+            client.SendMessage(GetReallyLongMessage(MethodBase.GetCurrentMethod().Name, 5000), defaultClient.RoomId, defaultClient.From);
         }
 
         [TestMethod]
         public void TestGetRoomHistory()
         {
             var client = new HipChat.HipChatClient(defaultClient.Token, defaultClient.RoomId);
-            var s = client.RoomHistory(DateTime.Today.AddDays(-1));
+            var s = client.RoomHistory(DateTime.Today);
             System.Diagnostics.Trace.WriteLine(s.Length > 50 ? s.Substring(0, 50) : s);
             Assert.IsNotNull(s);
+        }
+
+        /// <summary>
+        /// Helper method that generates a string longer than a certain length
+        /// </summary>
+        /// <param name="callingMethod">The name of the calling method - used as the message prefix</param>
+        /// <param name="minLength">The minimum length required - returned string will be longer than this</param>
+        /// <returns>A string longer than minLength</returns>
+        private string GetReallyLongMessage(string callingMethod, int minLength)
+        {
+            var s = new StringBuilder(callingMethod);
+            while (s.Length <= minLength)
+            {
+                s.Append(", The quick brown fox jumped over the lazy dog");
+            }
+            return s.ToString();
         }
     }
 }
