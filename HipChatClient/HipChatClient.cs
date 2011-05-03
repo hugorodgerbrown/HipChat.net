@@ -127,6 +127,16 @@ namespace HipChat
         /// <summary>
         /// Sends a message to a chat room.
         /// </summary>
+        public static void SendMessage(string token, int room, string from, string message, bool notify)
+        {
+            // create a local instance of HipChatClient, as then we get the validation
+            var client = new HipChatClient(token, room);
+            client.SendMessage(message, from, notify);
+        }
+
+        /// <summary>
+        /// Sends a message to a chat room.
+        /// </summary>
         /// <param name="message">The message to send - can contain some HTML and must be valid XHTML.</param>
         public void SendMessage(string message, int room, string from)
         {
