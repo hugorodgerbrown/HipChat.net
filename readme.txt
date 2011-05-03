@@ -34,5 +34,3 @@ HipChatClient.SendMessage(auth_token, room_id, name_of_sender, "Hello World!");
 TODO:
 1. Proper validation of message XHTML to ensure it won't be rejected by the API
 2. Add in history/show methods
-3. Convert return values into native classes?
-4. Some unit tests ;-)
