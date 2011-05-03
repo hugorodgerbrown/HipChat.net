@@ -139,6 +139,17 @@ namespace HipChat
         /// Sends a message to a chat room.
         /// </summary>
         /// <param name="message">The message to send - can contain some HTML and must be valid XHTML.</param>
+        /// <param name="notify">If true, the message triggers a "ping" sound when it hits the room.</param>
+        public void SendMessage(string message, int room, string from, bool notify)
+        {
+            this.Notify = notify;
+            SendMessage(message, room, from);
+        }
+
+        /// <summary>
+        /// Sends a message to a chat room.
+        /// </summary>
+        /// <param name="message">The message to send - can contain some HTML and must be valid XHTML.</param>
         /// <param name="room">The id of the room to send the message to - sets the RoomId property.</param>
         public void SendMessage(string message, int room)
         {
@@ -150,11 +161,35 @@ namespace HipChat
         /// Sends a message to a chat room.
         /// </summary>
         /// <param name="message">The message to send - can contain some HTML and must be valid XHTML.</param>
+        /// <param name="room">The id of the room to send the message to - sets the RoomId property.</param>
+        /// <param name="notify">If true, the message triggers a "ping" sound when it hits the room.</param>
+        public void SendMessage(string message, int room, bool notify)
+        {
+            this.Notify = notify;
+            SendMessage(message, room);
+        }
+
+        /// <summary>
+        /// Sends a message to a chat room.
+        /// </summary>
+        /// <param name="message">The message to send - can contain some HTML and must be valid XHTML.</param>
         /// <param name="from">The name of the sender - sets the From property.</param>
         public void SendMessage(string message, string from)
         {
             this.From = from;
             SendMessage(message);
+        }
+
+        /// <summary>
+        /// Sends a message to a chat room.
+        /// </summary>
+        /// <param name="message">The message to send - can contain some HTML and must be valid XHTML.</param>
+        /// <param name="from">The name of the sender - sets the From property.</param>
+        /// <param name="notify">If true, the message triggers a "ping" sound when it hits the room.</param>
+        public void SendMessage(string message, string from, bool notify)
+        {
+            this.Notify = notify;
+            SendMessage(message, from);
         }
 
         /// <summary>
