@@ -1,4 +1,4 @@
-﻿HipChat.Net Client library
+HipChat.Net Client library
 
 This is a C# library used to wrap the HipChat API (https://www.hipchat.com/docs/api)
 
