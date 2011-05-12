@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Xml;
+using System.IO;
+using System.Xml.Serialization;
 
 namespace HipChat
 {
@@ -257,13 +259,12 @@ namespace HipChat
         /// <returns>A List<> containing strongly-typed Entities.Room objects</returns>
         public List<Entities.Room> ListRoomsAsNativeObjects()
         {
-            List<Entities.Room> rooms = new List<Entities.Room>();
-            foreach (Entities.Room room in YieldRooms())
-            {
-                rooms.Add(room);
-            }
-            return rooms;
+            this.Format = ApiResponseFormat.XML;
+            XmlSerializer s = new XmlSerializer(typeof(Entities.Rooms));
+            Entities.Rooms theRooms = s.Deserialize(new StringReader(ListRooms())) as Entities.Rooms;
+            return new List<Entities.Room>(theRooms.RoomList);
         }
+
 
         /// <summary>
         /// Yields each individual room as strongly-typed Entities.Room object
@@ -280,7 +281,7 @@ namespace HipChat
             XmlDocument x = new XmlDocument();
             x.LoadXml(ListRooms());
 
-            // might be neater to deserialize the response using XmlSerializer 
+           // might be neater to deserialize the response using XmlSerializer 
             foreach (XmlElement e in x.DocumentElement.ChildNodes)
             {
                 Console.WriteLine(e.InnerText);
@@ -294,6 +295,19 @@ namespace HipChat
                 yield return new Entities.Room(id, name, topic, active, owner);
             }
         }
+
+        /// <summary>
+        /// Returns the history as native C# objects
+        /// </summary>
+        /// <returns>A List<> containing strongly-typed Entities.Message objects</returns>
+        public List<Entities.Message> ListHistoryAsNativeObjects(DateTime dt)
+        {
+            this.Format = ApiResponseFormat.XML;
+            XmlSerializer s = new XmlSerializer(typeof(Entities.Messages));
+            Entities.Messages theMessages = s.Deserialize(new StringReader(RoomHistory(dt))) as Entities.Messages;
+            return new List<Entities.Message>(theMessages.MessageList);
+        }
+
 
         /// <summary>
         /// Returns the chat history of a single room on a single day.

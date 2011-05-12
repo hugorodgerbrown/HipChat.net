@@ -50,7 +50,12 @@
     <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Entities\File.cs" />
+    <Compile Include="Entities\Message.cs" />
+    <Compile Include="Entities\Messages.cs" />
     <Compile Include="Entities\Room.cs" />
+    <Compile Include="Entities\Rooms.cs" />
+    <Compile Include="Entities\User.cs" />
     <Compile Include="HipChatClient.cs" />
     <Compile Include="HipChatApiWebException.cs" />
     <Compile Include="HttpUtils.cs" />
