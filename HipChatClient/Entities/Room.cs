@@ -6,6 +6,8 @@ namespace HipChat.Entities
     /// <summary>
     /// Strongly-typed entity representing a HipChat room - https://www.hipchat.com/docs/api/method/rooms/list
     /// </summary>
+    [Serializable]
+    [XmlRoot(ElementName="room")]
     public class Room
     {
         /// <summary>
@@ -30,7 +32,18 @@ namespace HipChat.Entities
         /// Time of last activity (sent message) in the room in UNIX time (UTC). May be 0 in rare cases when the time is unknown.
         /// </summary>
         [XmlElement(ElementName = "last_active")]
-        public DateTime LastActive { get; set; }
+        public string XmlLastActive
+        {
+            get { return LastActive.ToString("s"); }
+            set { LastActive = HttpUtils.ConvertUnixTime(value); }
+        }
+
+        [XmlIgnore]
+        public DateTime LastActive
+        {
+            get;
+            set;
+        }
 
         /// <summary>
         /// User ID of the room owner.
@@ -46,5 +59,8 @@ namespace HipChat.Entities
             this.LastActive = lastActive;
             this.Owner = owner;
         }
+
+        public Room()
+        {}
     }
 }
