@@ -1,0 +1,6 @@
+# git ignore file used to ignore test files, user-specific project files, output files (bin, obj)
+TestResults/*
+*.suo
+*.csproj.user   
+*/bin/*
+*/obj/*
