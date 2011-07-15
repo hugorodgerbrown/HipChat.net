@@ -2,10 +2,9 @@ HipChat.Net Client library
 
 This is a C# library used to wrap the HipChat API (https://www.hipchat.com/docs/api)
 
-The API is very clear and concise, so there's not much to add to this - this library just makes the formatting of the URL a bit simpler.
-The API returns either XML or JSON, and an obvious next step is to add native class support for the response types, however, I haven't done this,
-partly because for the listing of rooms JSON is a good bet, as it can be squirted direct to a web page for rendering, and because for the sending 
-of messages, I don't really care if a message gets there or not - this is NOT for mission ciritical, transactional, guaranteed delivery!
+The API is very clear and concise, so there's not much to add to this - this library just makes the formatting of the URL a bit simpler. The API returns either XML or JSON, and the client library contains native POCO representations for those who like those sorts of things. 
+
+NB This is NOT for mission critical, transactional, guaranteed delivery!
 
 The API supports four methods:
 1. Fetching a list of available chat rooms
