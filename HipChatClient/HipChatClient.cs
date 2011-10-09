@@ -4,6 +4,7 @@ using System.Net;
 using System.Xml;
 using System.IO;
 using System.Xml.Serialization;
+using Newtonsoft.Json;
 
 namespace HipChat
 {
@@ -265,6 +266,8 @@ namespace HipChat
             return new List<Entities.Room>(theRooms.RoomList);
         }
 
+        
+
 
         /// <summary>
         /// Yields each individual room as strongly-typed Entities.Room object
@@ -308,6 +311,13 @@ namespace HipChat
             return new List<Entities.Message>(theMessages.MessageList);
         }
 
+        public List<Entities.Message> ListHistoryAsNativeObjects()
+        {
+            this.Format = ApiResponseFormat.XML;
+            XmlSerializer s = new XmlSerializer(typeof(Entities.Messages));
+            Entities.Messages theMessages = s.Deserialize(new StringReader(RoomHistory())) as Entities.Messages;
+            return new List<Entities.Message>(theMessages.MessageList);
+        }
 
         /// <summary>
         /// Returns the chat history of a single room on a single day.
@@ -326,6 +336,21 @@ namespace HipChat
 
             HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create(FormatRoomsHistoryUri(date));
             return HttpUtils.CallApi(request);
+        }
+
+        public string RoomHistory()
+        {
+            #region validation
+            if (string.IsNullOrEmpty(Token))
+                throw new InvalidOperationException("You must set the Token property before calling the API.");
+            if (RoomId == int.MinValue)
+                throw new InvalidOperationException("You must set the RoomId property before calling the SendMessage method.");
+           
+            #endregion validation
+
+            HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create(FormatRoomsHistoryUri());
+            return HttpUtils.CallApi(request);
+
         }
 
         /// <summary>
@@ -366,5 +391,15 @@ namespace HipChat
                 this.RoomId,
                 date.ToString("yyyy-MM-dd"));
         }
+
+        private string FormatRoomsHistoryUri()
+        {
+            return string.Format("https://api.hipchat.com/v1/rooms/history?format={0}&auth_token={1}&room_id={2}&date={3}",
+               this.Format.ToString().ToLower(),
+               this.Token,
+               this.RoomId,
+               "recent");
+        }
+
     }
 }
