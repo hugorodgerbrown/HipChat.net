@@ -4,7 +4,6 @@ using System.Net;
 using System.Xml;
 using System.IO;
 using System.Xml.Serialization;
-using Newtonsoft.Json;
 
 namespace HipChat
 {
@@ -21,6 +20,12 @@ namespace HipChat
         private ApiResponseFormat format = ApiResponseFormat.JSON;
         private bool notify = false;
         private string token = string.Empty;
+        private BackgroundColor color = BackgroundColor.yellow; // default is yellow
+
+        /// <summary>
+        /// Background color for message. One of "yellow", "red", "green", "purple", or "random". (default: yellow)
+        /// </summary>
+        public enum BackgroundColor { red, green, yellow, purple, random }
 
         /// <summary>
         /// If True, Sender and Message values are automatically truncated if they are too long.
@@ -82,6 +87,11 @@ namespace HipChat
                 }
             }
         }
+        
+        /// <summary>
+        /// Background color for message. 
+        /// </summary>
+        public BackgroundColor Color { get { return color; } set { color = value; } }
 
         #region constructors
         public HipChatClient() { AutoTruncate = true; }
@@ -198,11 +208,61 @@ namespace HipChat
         /// </summary>
         /// <param name="message">The message to send - can contain some HTML and must be valid XHTML.</param>
         /// <param name="from">The name of the sender - sets the From property.</param>
+        /// <param name="color">Background color to use with the message</param>
+        public void SendMessage(string message, string from, BackgroundColor color)
+        {
+            this.From = from;
+            this.Color = color;
+            SendMessage(message);
+        }
+
+        /// <summary>
+        /// Sends a message to a chat room.
+        /// </summary>
+        /// <param name="message">The message to send - can contain some HTML and must be valid XHTML.</param>
+        /// <param name="from">The name of the sender - sets the From property.</param>
         /// <param name="notify">If true, the message triggers a "ping" sound when it hits the room.</param>
         public void SendMessage(string message, string from, bool notify)
         {
             this.Notify = notify;
             SendMessage(message, from);
+        }
+
+        /// <summary>
+        /// Sends a message to a chat room.
+        /// </summary>
+        /// <param name="message">The message to send - can contain some HTML and must be valid XHTML.</param>
+        /// <param name="from">The name of the sender - sets the From property.</param>
+        /// <param name="notify">If true, the message triggers a "ping" sound when it hits the room.</param>
+        /// <param name="color">Background color to use with the message</param>
+        public void SendMessage(string message, string from, bool notify, BackgroundColor color)
+        {
+            this.Notify = notify;
+            SendMessage(message, from, color);
+        }
+
+        /// <summary>
+        /// Sends a message to a chat room.
+        /// </summary>
+        /// <param name="message">The message to send - can contain some HTML and must be valid XHTML.</param>
+        /// <param name="color">Background color to use with the message</param>
+        public void SendMessage(string message, BackgroundColor color)
+        {
+            this.Color = color;
+            SendMessage(message);
+        }
+
+        /// <summary>
+        /// Sends a message to a chat room.
+        /// </summary>
+        /// <param name="message">The message to send - can contain some HTML and must be valid XHTML.</param>
+        /// <param name="notify">If true, the message triggers a "ping" sound when it hits the room.</param>
+        /// <param name="color">Background color to use with the message</param>
+        public void SendMessage(string message, BackgroundColor color, bool notify)
+        {
+            this.Color = color;
+            this.Notify = notify;
+            SendMessage(message);
         }
 
         /// <summary>
@@ -358,13 +418,14 @@ namespace HipChat
         /// </summary>
         private string FormatMessageUri(string message)
         {
-            var url = string.Format(@"https://api.hipchat.com/v1/rooms/message?auth_token={0}&room_id={1}&format={2}&notify={3}&from={4}&message={5}",
+            var url = string.Format(@"https://api.hipchat.com/v1/rooms/message?auth_token={0}&room_id={1}&format={2}&notify={3}&from={4}&message={5}&color={6}",
                 this.Token,
                 this.RoomId,
                 this.Format.ToString().ToLower(),
                 this.NotifyAsChar,
                 this.From,
-                message);
+                message,
+                this.Color.ToString());
             return Uri.EscapeUriString(url);
         }
 

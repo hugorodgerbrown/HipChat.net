@@ -95,6 +95,27 @@ namespace HipChatClientTests
         }
 
         [TestMethod]
+        public void TestSendMessage_Message_Red()
+        {
+            var client = new HipChat.HipChatClient(defaultClient.Token, defaultClient.RoomId, defaultClient.From);
+            client.SendMessage(MethodBase.GetCurrentMethod().Name, HipChatClient.BackgroundColor.red);
+        }
+
+        [TestMethod]
+        public void TestSendMessage_Message_Purple()
+        {
+            var client = new HipChat.HipChatClient(defaultClient.Token, defaultClient.RoomId, defaultClient.From);
+            client.SendMessage(MethodBase.GetCurrentMethod().Name, HipChatClient.BackgroundColor.purple);
+        }
+
+        [TestMethod]
+        public void TestSendMessage_Message_green_notify()
+        {
+            var client = new HipChat.HipChatClient(defaultClient.Token, defaultClient.RoomId, defaultClient.From);
+            client.SendMessage(MethodBase.GetCurrentMethod().Name, HipChatClient.BackgroundColor.green, true);
+        }
+
+        [TestMethod]
         public void TestSendMessage_Message_From()
         {
             var client = new HipChat.HipChatClient(defaultClient.Token, defaultClient.RoomId);
@@ -133,7 +154,6 @@ namespace HipChatClientTests
         {
             HipChat.HipChatClient.SendMessage(defaultClient.Token, defaultClient.RoomId, defaultClient.From, MethodBase.GetCurrentMethod().Name, true);
         }
-
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentException))]
