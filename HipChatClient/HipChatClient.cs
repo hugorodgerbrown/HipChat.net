@@ -147,6 +147,28 @@ namespace HipChat
             client.SendMessage(message, from, notify);
         }
 
+
+        /// <summary>
+        /// Sends a message to a chat room.
+        /// </summary>
+        public static void SendMessage(string token, int room, string from, string message, BackgroundColor color)
+        {
+            // create a local instance of HipChatClient, as then we get the validation
+            var client = new HipChatClient(token, room);
+            client.SendMessage(message, from, color);
+        }
+
+
+        /// <summary>
+        /// Sends a message to a chat room.
+        /// </summary>
+        public static void SendMessage(string token, int room, string from, string message, bool notify, BackgroundColor color)
+        {
+            // create a local instance of HipChatClient, as then we get the validation
+            var client = new HipChatClient(token, room);
+            client.SendMessage(message, from, notify, color);
+        }
+
         /// <summary>
         /// Sends a message to a chat room.
         /// </summary>
