@@ -441,14 +441,14 @@ namespace HipChat
         private string FormatMessageUri(string message)
         {
             var url = string.Format(@"https://api.hipchat.com/v1/rooms/message?auth_token={0}&room_id={1}&format={2}&notify={3}&from={4}&message={5}&color={6}",
-                this.Token,
+                Uri.EscapeDataString(this.Token),
                 this.RoomId,
                 this.Format.ToString().ToLower(),
                 this.NotifyAsChar,
-                this.From,
-                message,
+				Uri.EscapeDataString(this.From),
+				Uri.EscapeDataString(message),
                 this.Color.ToString());
-            return Uri.EscapeUriString(url);
+            return url;
         }
 
         /// <summary>
