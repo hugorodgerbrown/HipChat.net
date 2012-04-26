@@ -94,7 +94,14 @@ namespace HipChatClientTests
             client.SendMessage(MethodBase.GetCurrentMethod().Name);
         }
 
-        [TestMethod]
+		[TestMethod]
+		public void TestSendMessage_HtmlMessage()
+		{
+			var client = new HipChat.HipChatClient(defaultClient.Token, defaultClient.RoomId, defaultClient.From);
+			client.SendMessage(MethodBase.GetCurrentMethod().Name + " <a href='http://en.wikiquote.org/wiki/Pulp_Fiction#Dialogue'>Quotable &amp; questionable (?) gems from &quot;Pulp Fiction&quot;</a> =)");
+		}
+
+		[TestMethod]
         public void TestSendMessage_Message_Red()
         {
             var client = new HipChat.HipChatClient(defaultClient.Token, defaultClient.RoomId, defaultClient.From);
