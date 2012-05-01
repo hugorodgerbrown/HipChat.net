@@ -102,6 +102,13 @@ namespace HipChatClientTests
 		}
 
 		[TestMethod]
+		public void TestSendMessage_UnicodeAuthorAndMessage()
+		{
+			var client = new HipChat.HipChatClient(defaultClient.Token, defaultClient.RoomId, "lǝʌɐd ツ");
+			client.SendMessage(MethodBase.GetCurrentMethod().Name + " ಠ_ಠ");
+		}
+
+		[TestMethod]
         public void TestSendMessage_Message_Red()
         {
             var client = new HipChat.HipChatClient(defaultClient.Token, defaultClient.RoomId, defaultClient.From);
