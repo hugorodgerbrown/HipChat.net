@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net;
 using System.Xml;
-using System.IO;
 using System.Xml.Serialization;
 
 namespace HipChat
@@ -15,7 +15,7 @@ namespace HipChat
     /// </remarks>
     public class HipChatClient
     {
-        private int room = int.MinValue;
+        private string roomId = string.Empty;
         private string sender = string.Empty;
         private ApiResponseFormat format = ApiResponseFormat.JSON;
         private bool notify = false;
@@ -60,7 +60,39 @@ namespace HipChat
         /// <summary>
         /// The numeric id of the room to which to send a message
         /// </summary>
-        public int RoomId { get { return room; } set { room = value; } }
+        public int RoomId 
+        {
+            // Convert to and from an integer to preserve API backward compatibility
+            get 
+            {
+                int id;
+                if(int.TryParse(roomId, out id)) 
+                {
+                    return id;
+                }
+
+                return int.MinValue;
+            } 
+            set 
+            {
+                roomId = value.ToString();
+            }
+        }
+
+        /// <summary>
+        /// The name of the room to which to send a message.
+        /// </summary>
+        public string RoomName 
+        {
+            get 
+            {
+                return roomId;
+            }
+            set 
+            {
+                roomId = value;
+            }
+        }
 
         /// <summary>
         /// Name the message will appear be sent from. Must be less than 15 characters long. May contain letters, numbers, -, _, and spaces.
@@ -113,14 +145,32 @@ namespace HipChat
             this.RoomId = room;
         }
 
+        public HipChatClient(string token, string room) 
+            : this(token) 
+        {
+            this.RoomName = room;
+        }
+
         public HipChatClient(string token, int room, string from)
             : this(token, room)
         {
             this.From = from;
         }
 
+        public HipChatClient(string token, string room, string from)
+            : this(token, room) 
+        {
+            this.From = from;
+        }
+
         public HipChatClient(string token, int room, ApiResponseFormat format)
             : this(token, room)
+        {
+            this.Format = format;
+        }
+
+        public HipChatClient(string token, string room, ApiResponseFormat format)
+            : this(token, room) 
         {
             this.Format = format;
         }
@@ -140,6 +190,16 @@ namespace HipChat
         /// <summary>
         /// Sends a message to a chat room.
         /// </summary>
+        public static void SendMessage(string token, string room, string from, string message) 
+        {
+            // create a local instance of HipChatClient, as then we get the validation
+            var client = new HipChatClient(token, room);
+            client.SendMessage(message, from);
+        }
+
+        /// <summary>
+        /// Sends a message to a chat room.
+        /// </summary>
         public static void SendMessage(string token, int room, string from, string message, bool notify)
         {
             // create a local instance of HipChatClient, as then we get the validation
@@ -147,6 +207,15 @@ namespace HipChat
             client.SendMessage(message, from, notify);
         }
 
+        /// <summary>
+        /// Sends a message to a chat room.
+        /// </summary>
+        public static void SendMessage(string token, string room, string from, string message, bool notify) 
+        {
+            // create a local instance of HipChatClient, as then we get the validation
+            var client = new HipChatClient(token, room);
+            client.SendMessage(message, from, notify);
+        }
 
         /// <summary>
         /// Sends a message to a chat room.
@@ -158,11 +227,30 @@ namespace HipChat
             client.SendMessage(message, from, color);
         }
 
+        /// <summary>
+        /// Sends a message to a chat room.
+        /// </summary>
+        public static void SendMessage(string token, string room, string from, string message, BackgroundColor color) 
+        {
+            // create a local instance of HipChatClient, as then we get the validation
+            var client = new HipChatClient(token, room);
+            client.SendMessage(message, from, color);
+        }
 
         /// <summary>
         /// Sends a message to a chat room.
         /// </summary>
         public static void SendMessage(string token, int room, string from, string message, bool notify, BackgroundColor color)
+        {
+            // create a local instance of HipChatClient, as then we get the validation
+            var client = new HipChatClient(token, room);
+            client.SendMessage(message, from, notify, color);
+        }
+
+        /// <summary>
+        /// Sends a message to a chat room.
+        /// </summary>
+        public static void SendMessage(string token, string room, string from, string message, bool notify, BackgroundColor color) 
         {
             // create a local instance of HipChatClient, as then we get the validation
             var client = new HipChatClient(token, room);
@@ -184,8 +272,30 @@ namespace HipChat
         /// Sends a message to a chat room.
         /// </summary>
         /// <param name="message">The message to send - can contain some HTML and must be valid XHTML.</param>
+        public void SendMessage(string message, string room, string from) 
+        {
+            this.RoomName = room;
+            this.From = from;
+            SendMessage(message);
+        }
+
+        /// <summary>
+        /// Sends a message to a chat room.
+        /// </summary>
+        /// <param name="message">The message to send - can contain some HTML and must be valid XHTML.</param>
         /// <param name="notify">If true, the message triggers a "ping" sound when it hits the room.</param>
         public void SendMessage(string message, int room, string from, bool notify)
+        {
+            this.Notify = notify;
+            SendMessage(message, room, from);
+        }
+
+        /// <summary>
+        /// Sends a message to a chat room.
+        /// </summary>
+        /// <param name="message">The message to send - can contain some HTML and must be valid XHTML.</param>
+        /// <param name="notify">If true, the message triggers a "ping" sound when it hits the room.</param>
+        public void SendMessage(string message, string room, string from, bool notify) 
         {
             this.Notify = notify;
             SendMessage(message, room, from);
@@ -201,7 +311,7 @@ namespace HipChat
             this.RoomId = room;
             SendMessage(message);
         }
-
+        
         /// <summary>
         /// Sends a message to a chat room.
         /// </summary>
@@ -213,7 +323,7 @@ namespace HipChat
             this.Notify = notify;
             SendMessage(message, room);
         }
-
+        
         /// <summary>
         /// Sends a message to a chat room.
         /// </summary>
@@ -296,7 +406,7 @@ namespace HipChat
             #region validation
             if (string.IsNullOrEmpty(Token))
                 throw new InvalidOperationException("You must set the Token property before calling the SendMessage method.");
-            if (RoomId == int.MinValue)
+            if (string.IsNullOrEmpty(RoomName)) 
                 throw new InvalidOperationException("You must set the RoomId property before calling the SendMessage method.");
             if (string.IsNullOrEmpty(From))
                 throw new InvalidOperationException("You must set the From property before calling the SendMessage method.");
@@ -410,7 +520,7 @@ namespace HipChat
             #region validation
             if (string.IsNullOrEmpty(Token))
                 throw new InvalidOperationException("You must set the Token property before calling the API.");
-            if (RoomId == int.MinValue)
+            if (string.IsNullOrEmpty(RoomName))
                 throw new InvalidOperationException("You must set the RoomId property before calling the SendMessage method.");
             if (date == null)
                 throw new ArgumentNullException("date", "You must pass in a valid date for the history API.");
@@ -425,7 +535,7 @@ namespace HipChat
             #region validation
             if (string.IsNullOrEmpty(Token))
                 throw new InvalidOperationException("You must set the Token property before calling the API.");
-            if (RoomId == int.MinValue)
+            if (string.IsNullOrEmpty(RoomName))
                 throw new InvalidOperationException("You must set the RoomId property before calling the SendMessage method.");
            
             #endregion validation
@@ -442,7 +552,7 @@ namespace HipChat
         {
             var url = string.Format(@"https://api.hipchat.com/v1/rooms/message?auth_token={0}&room_id={1}&format={2}&notify={3}&from={4}&message={5}&color={6}",
                 Uri.EscapeDataString(this.Token),
-                this.RoomId,
+                Uri.EscapeDataString(this.RoomName),
                 this.Format.ToString().ToLower(),
                 this.NotifyAsChar,
 				Uri.EscapeDataString(this.From),
@@ -471,7 +581,7 @@ namespace HipChat
             return string.Format("https://api.hipchat.com/v1/rooms/history?format={0}&auth_token={1}&room_id={2}&date={3}",
                 this.Format.ToString().ToLower(),
                 this.Token,
-                this.RoomId,
+                Uri.EscapeDataString(this.RoomName),
                 date.ToString("yyyy-MM-dd"));
         }
 
@@ -480,7 +590,7 @@ namespace HipChat
             return string.Format("https://api.hipchat.com/v1/rooms/history?format={0}&auth_token={1}&room_id={2}&date={3}",
                this.Format.ToString().ToLower(),
                this.Token,
-               this.RoomId,
+               Uri.EscapeDataString(this.RoomName),
                "recent");
         }
 
