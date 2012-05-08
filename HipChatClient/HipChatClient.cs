@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net;
-using System.Xml;
 using System.IO;
+using System.Linq;
+using System.Net;
+using System.Text;
+using System.Xml;
 using System.Xml.Serialization;
 
 namespace HipChat
@@ -32,7 +34,17 @@ namespace HipChat
         /// </summary>
         public bool AutoTruncate { get; set; }
 
-        /// <summary>
+		/// <summary>
+		/// String to append to truncated values.
+		/// </summary>
+		private const string Ellipsis = "…";
+
+    	/// <summary>
+    	/// HipChat's "from" byte count limit.
+    	/// </summary>
+		private const int MaxFromByteCount = 15;
+
+    	/// <summary>
         /// Used to determine the format of the API response (JSON is default)
         /// </summary>
         public enum ApiResponseFormat { JSON = 0, XML = 1 }
@@ -70,15 +82,15 @@ namespace HipChat
             get { return sender; }
             set
             {
-                if (value.Length > 15)
+				if (ByteLength(value) > MaxFromByteCount)
                 {
                     if (AutoTruncate)
                     {
-                        sender = value.Substring(0, 15);
+						sender = LimitByteLength(value, MaxFromByteCount);
                     }
                     else
                     {
-                        throw new ArgumentException("Sender name must be 15 characters or less.", "Sender");
+                        throw new ArgumentException("Sender name must be 15 bytes or less.", "Sender");
                     }
                 }
                 else
@@ -87,9 +99,21 @@ namespace HipChat
                 }
             }
         }
-        
-        /// <summary>
-        /// Background color for message. 
+
+    	private static int ByteLength(string str)
+    	{
+    		return Encoding.UTF8.GetByteCount(str);
+    	}
+
+		private static String LimitByteLength(String input, Int32 maxLength)
+		{
+			char[] array = input.TakeWhile((c, i) => ByteLength(input.Substring(0, i + 1) + Ellipsis) <= maxLength).ToArray();
+
+			return new String(array) + Ellipsis;
+		}
+
+    	/// <summary>
+        /// Background color for message.
         /// </summary>
         public BackgroundColor Color { get { return color; } set { color = value; } }
 
