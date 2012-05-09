@@ -40,9 +40,9 @@ namespace HipChat
 		private const string Ellipsis = "…";
 
     	/// <summary>
-    	/// HipChat's "from" byte count limit.
+    	/// HipChat's "from" character length limit.
     	/// </summary>
-		private const int MaxFromByteCount = 15;
+		private const int MaxFromLength = 15;
 
     	/// <summary>
         /// Used to determine the format of the API response (JSON is default)
@@ -82,35 +82,12 @@ namespace HipChat
             get { return sender; }
             set
             {
-				if (ByteLength(value) > MaxFromByteCount)
-                {
-                    if (AutoTruncate)
-                    {
-						sender = LimitByteLength(value, MaxFromByteCount);
-                    }
-                    else
-                    {
-                        throw new ArgumentException("Sender name must be 15 bytes or less.", "Sender");
-                    }
-                }
-                else
-                {
-                    sender = value;
-                }
+            	if (String.IsNullOrEmpty(value) || (value.Length > MaxFromLength && !AutoTruncate))
+					throw new ArgumentException("From name must be 1-15 characters.");
+
+            	sender = value.Length > MaxFromLength ? value.Substring(0, MaxFromLength - Ellipsis.Length) + Ellipsis : value;
             }
         }
-
-    	private static int ByteLength(string str)
-    	{
-    		return Encoding.UTF8.GetByteCount(str);
-    	}
-
-		private static String LimitByteLength(String input, Int32 maxLength)
-		{
-			char[] array = input.TakeWhile((c, i) => ByteLength(input.Substring(0, i + 1) + Ellipsis) <= maxLength).ToArray();
-
-			return new String(array) + Ellipsis;
-		}
 
     	/// <summary>
         /// Background color for message.

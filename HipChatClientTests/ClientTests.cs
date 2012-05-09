@@ -109,13 +109,13 @@ namespace HipChatClientTests
 		}
 
 		/// <summary>
-		/// HipChat API claims "From" string length limit is 15 characters, but it is really 15 bytes.
+		/// HipChat API used to erroneously limit "From" to 15 bytes instead of characters.
 		/// </summary>
 		[TestMethod]
 		public void TestSendMessage_LongUnicodeAuthor()
 		{
-			var client = new HipChat.HipChatClient(defaultClient.Token, defaultClient.RoomId, "ɹoʇɐɹʇsıuıɯpɐ");
-			client.SendMessage(MethodBase.GetCurrentMethod().Name + " ಠ_ಠ");
+			var client = new HipChat.HipChatClient(defaultClient.Token, defaultClient.RoomId, "10ɹoʇɐɹʇsıuıɯpɐ");
+			client.SendMessage(MethodBase.GetCurrentMethod().Name);
 		}
 
 		[TestMethod]
