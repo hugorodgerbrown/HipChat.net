@@ -21,7 +21,7 @@ namespace HipChatClientTests
             container.Install(new HipChatClientInstaller());
             defaultClient = container.Resolve<HipChatClient>("ChatClient");
             defaultClient.From += defaultClient.GetHashCode().ToString();
-            defaultClient.SendMessage("TestWindsorInstaller");
+//            defaultClient.SendMessage("TestWindsorInstaller");
         }
 
         [TestMethod]
@@ -40,6 +40,7 @@ namespace HipChatClientTests
             foreach (HipChat.Entities.Room room in client.YieldRooms())
             {
                 x++;
+                Console.WriteLine(room);
             }
             Assert.IsTrue(x > 0);
         }
