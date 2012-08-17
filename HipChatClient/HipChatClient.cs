@@ -21,6 +21,13 @@ namespace HipChat
         private bool notify = false;
         private string token = string.Empty;
         private BackgroundColor color = BackgroundColor.yellow; // default is yellow
+        private MessageFormat messageFormat = MessageFormat.html; // default is html;
+
+        /// <summary>
+        /// Message format this parameter determines the format of the messages posted to hip chat.
+        /// HTML is the default, however text is useful when whating to alert specific users.
+        /// </summary>
+        public enum MessageFormat { html, text }
 
         /// <summary>
         /// Background color for message. One of "yellow", "red", "green", "purple", or "random". (default: yellow)
@@ -175,6 +182,12 @@ namespace HipChat
             this.Format = format;
         }
 
+        public HipChatClient(string token, string room, MessageFormat messageFormat)
+            : this(token, room)
+        {
+            this.messageFormat = messageFormat;
+        }
+
         #endregion constructors
 
         /// <summary>
@@ -257,6 +270,15 @@ namespace HipChat
             client.SendMessage(message, from, notify, color);
         }
 
+        /// <summary>
+        /// Sends a message to a chat room.
+        /// </summary>
+        public static void SendMessage(string token, string room, string from, string message, bool notify, BackgroundColor color, MessageFormat messageFormat)
+        {
+            // create a local instance of HipChatClient, as then we get the validation
+            var client = new HipChatClient(token, room);
+            client.SendMessage(message, from, notify, color);
+        }
         /// <summary>
         /// Sends a message to a chat room.
         /// </summary>
@@ -550,14 +572,15 @@ namespace HipChat
         /// </summary>
         private string FormatMessageUri(string message)
         {
-            var url = string.Format(@"https://api.hipchat.com/v1/rooms/message?auth_token={0}&room_id={1}&format={2}&notify={3}&from={4}&message={5}&color={6}",
+            var url = string.Format(@"https://api.hipchat.com/v1/rooms/message?auth_token={0}&room_id={1}&format={2}&notify={3}&from={4}&message={5}&color={6}&message_format={7}",
                 Uri.EscapeDataString(this.Token),
                 Uri.EscapeDataString(this.RoomName),
                 this.Format.ToString().ToLower(),
                 this.NotifyAsChar,
 				Uri.EscapeDataString(this.From),
 				Uri.EscapeDataString(message),
-                this.Color.ToString());
+                this.Color.ToString(),
+                this.messageFormat.ToString());
             return url;
         }
 
