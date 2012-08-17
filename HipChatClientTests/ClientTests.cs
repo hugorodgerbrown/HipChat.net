@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System.Globalization;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Text;
 using System.Collections.Generic;
@@ -202,6 +203,14 @@ namespace HipChatClientTests
             Assert.IsNotNull(s);
         }
 
+
+        [TestMethod]
+        public void TestUserAlertingWithTextFormatMessage()
+        {
+            var client = new HipChat.HipChatClient(defaultClient.Token, defaultClient.RoomId.ToString(),HipChatClient.MessageFormat.text);
+            client.SendMessage("@all this is a test message notifing all users in the room",
+                defaultClient.From);
+        }
         /// <summary>
         /// Helper method that generates a string longer than a certain length
         /// </summary>
