@@ -30,9 +30,9 @@ namespace HipChat
         public enum MessageFormat { html, text }
 
         /// <summary>
-        /// Background color for message. One of "yellow", "red", "green", "purple", or "random". (default: yellow)
+        /// Background color for message. One of "yellow", "red", "green", "purple", "gray" or "random". (default: yellow)
         /// </summary>
-        public enum BackgroundColor { red, green, yellow, purple, random }
+        public enum BackgroundColor { red, green, yellow, purple, gray, random }
 
         /// <summary>
         /// If True, Sender and Message values are automatically truncated if they are too long.
