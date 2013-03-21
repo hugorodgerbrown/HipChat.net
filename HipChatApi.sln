@@ -1,6 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HipChatClient", "HipChatClient\HipChatClient.csproj", "{0F0FE568-B02E-4C1C-AC12-7EC404072CDA}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HipChatClientTests", "HipChatClientTests\HipChatClientTests.csproj", "{6231343A-10B9-4087-BD35-BBAAD73FA8F1}"
@@ -8,10 +8,17 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{E15C05FC-701E-4687-A824-16338E60E3E2}"
 	ProjectSection(SolutionItems) = preProject
 		HipChatClient\HipChat.Net.snk = HipChatClient\HipChat.Net.snk
-		readme.txt = readme.txt
+		readme.md = readme.md
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "hipchat.notification", "hipchat.notification\hipchat.notification.csproj", "{53252857-74FF-4B36-A7E6-A87E2E34C6D5}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{336A6851-39C5-4BD1-9424-7AA9B9CE8257}"
+	ProjectSection(SolutionItems) = preProject
+		.nuget\NuGet.Config = .nuget\NuGet.Config
+		.nuget\NuGet.exe = .nuget\NuGet.exe
+		.nuget\NuGet.targets = .nuget\NuGet.targets
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
