@@ -1,6 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HipChatClient", "HipChatClient\HipChatClient.csproj", "{0F0FE568-B02E-4C1C-AC12-7EC404072CDA}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HipChatClientTests", "HipChatClientTests\HipChatClientTests.csproj", "{6231343A-10B9-4087-BD35-BBAAD73FA8F1}"
