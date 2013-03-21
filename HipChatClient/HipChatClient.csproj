@@ -59,6 +59,7 @@
     <Compile Include="HipChatClient.cs" />
     <Compile Include="HipChatApiWebException.cs" />
     <Compile Include="HttpUtils.cs" />
+    <Compile Include="IHipChatAPI.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
