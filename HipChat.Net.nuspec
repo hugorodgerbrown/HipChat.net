@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+  <metadata>
+    <version>1.2</version>
+
+    <id>HipChat.Net</id>
+    <title>HipChat.Net</title>
+    <description>HipChat API library for .NET</description>
+
+    <authors>Hugo Rodger-Brown</authors>
+    <owners>Hugo Rodger-Brown</owners>
+
+    <licenseUrl>https://github.com/hugorodgerbrown/HipChat.net</licenseUrl>
+    <projectUrl>https://github.com/hugorodgerbrown/HipChat.net</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <copyright>Copyright 2012</copyright>
+
+    <releaseNotes>
+      Various updates, see GitHub for details of commits since previous version (03-Feb-2012).
+
+      Highlights include:
+      - Unicode support
+      - Ability to use room names
+    </releaseNotes>
+  </metadata>
+
+  <files>
+    <file src="readme.md" target="tools\readme.md" />
+    <file src="HipChatClient\bin\Debug\HipChat.Net.dll" target="lib\net45\HipChat.Net.dll" />
+  </files>
+</package>
