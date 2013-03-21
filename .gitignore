@@ -4,3 +4,4 @@ TestResults/*
 *.csproj.user   
 */bin/*
 */obj/*
+packages/*
