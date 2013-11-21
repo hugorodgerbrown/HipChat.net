@@ -38,6 +38,12 @@ namespace HipChat.Entities
             set { LastActive = HttpUtils.ConvertUnixTime(value); }
         }
 
+        /// <summary>
+        /// The XMPP JID for the room.
+        /// </summary>
+        [XmlElement(ElementName = "xmpp_jid")]
+        public string XmppJid { get; set; }
+
         [XmlIgnore]
         public DateTime LastActive
         {
