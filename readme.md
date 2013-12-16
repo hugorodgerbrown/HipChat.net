@@ -1,5 +1,11 @@
 #HipChat.Net Client library
 
+**UPDATE**
+
+I no longer use .NET, and do not have a working, stable .NET development environment set up, which makes maintaining this project a PITA. If anyone would like to take it over (specifically the packaging for Nuget, which is the hard part to do without a dev environment), please get in touch.
+
+---
+
 This is a C# library used to wrap the [HipChat API](https://www.hipchat.com/docs/api)
 
 The API is very clear and concise, so there's not much to add to this - this library just makes the formatting of the URL a bit simpler. The API returns either XML or JSON, and the client library contains native POCO representations for those who like those sorts of things. 
