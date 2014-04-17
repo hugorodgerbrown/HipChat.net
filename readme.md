@@ -4,6 +4,8 @@
 
 I no longer use .NET, and do not have a working, stable .NET development environment set up, which makes maintaining this project a PITA. If anyone would like to take it over (specifically the packaging for Nuget, which is the hard part to do without a dev environment), please get in touch.
 
+https://github.com/chris-peterson is interested in taking this over.  First plan would be to publish a nuget package.
+
 ---
 
 This is a C# library used to wrap the [HipChat API](https://www.hipchat.com/docs/api)
