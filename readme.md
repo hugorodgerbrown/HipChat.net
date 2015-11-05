@@ -39,6 +39,9 @@ client.SendMessage("Hello World!");
 // for one-off use, there is a static method - NB this creates an instance internally, so 
 // only use when making one-off calls.
 HipChatClient.SendMessage(auth_token, room_id, name_of_sender, "Hello World!");
+
+// optional the hipchat server can be set to a hipchat enterprise server
+client.ServerName = name_of_server;
 ```
 
 ##TODO

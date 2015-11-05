@@ -20,6 +20,7 @@ namespace HipChat
         private ApiResponseFormat format = ApiResponseFormat.JSON;
         private bool notify = false;
         private string token = string.Empty;
+        private string servername = "api.hipchat.com";
         private BackgroundColor color = BackgroundColor.yellow; // default is yellow
         private MessageFormat messageFormat = MessageFormat.html; // default is html;
 
@@ -63,6 +64,11 @@ namespace HipChat
         /// The API authentication token - this is managed through the HipChat account admin panel.
         /// </summary>
         public string Token { get { return token; } set { token = value; } }
+
+        /// <summary>
+        /// The API authentication token - this is managed through the HipChat account admin panel.
+        /// </summary>
+        public string ServerName { get { return servername; } set { servername = value; } }
 
         /// <summary>
         /// The numeric id of the room to which to send a message
@@ -572,7 +578,7 @@ namespace HipChat
         /// </summary>
         private string FormatMessageUri(string message)
         {
-            var url = string.Format(@"https://api.hipchat.com/v1/rooms/message?auth_token={0}&room_id={1}&format={2}&notify={3}&from={4}&message={5}&color={6}&message_format={7}",
+            var url = string.Format(@"https://{8}/v1/rooms/message?auth_token={0}&room_id={1}&format={2}&notify={3}&from={4}&message={5}&color={6}&message_format={7}",
                 Uri.EscapeDataString(this.Token),
                 Uri.EscapeDataString(this.RoomName),
                 this.Format.ToString().ToLower(),
@@ -580,7 +586,8 @@ namespace HipChat
 				Uri.EscapeDataString(this.From),
 				Uri.EscapeDataString(message),
                 this.Color.ToString(),
-                this.messageFormat.ToString());
+                this.messageFormat.ToString(),
+                this.servername);
             return url;
         }
 
@@ -589,9 +596,10 @@ namespace HipChat
         /// </summary>
         private string FormatRoomsListUri()
         {
-            return string.Format("https://api.hipchat.com/v1/rooms/list?format={0}&auth_token={1}",
+            return string.Format("https://{2}/v1/rooms/list?format={0}&auth_token={1}",
                 this.Format.ToString().ToLower(),
-                this.Token);
+                this.Token,
+                this.servername);
         }
 
         /// <summary>
@@ -601,20 +609,22 @@ namespace HipChat
         /// <returns>The URL to use</returns>
         private string FormatRoomsHistoryUri(DateTime date)
         {
-            return string.Format("https://api.hipchat.com/v1/rooms/history?format={0}&auth_token={1}&room_id={2}&date={3}",
+            return string.Format("https://{4}/v1/rooms/history?format={0}&auth_token={1}&room_id={2}&date={3}",
                 this.Format.ToString().ToLower(),
                 this.Token,
                 Uri.EscapeDataString(this.RoomName),
-                date.ToString("yyyy-MM-dd"));
+                date.ToString("yyyy-MM-dd"),
+                this.servername);
         }
 
         private string FormatRoomsHistoryUri()
         {
-            return string.Format("https://api.hipchat.com/v1/rooms/history?format={0}&auth_token={1}&room_id={2}&date={3}",
+            return string.Format("https://{4}/v1/rooms/history?format={0}&auth_token={1}&room_id={2}&date={3}",
                this.Format.ToString().ToLower(),
                this.Token,
                Uri.EscapeDataString(this.RoomName),
-               "recent");
+               "recent",
+               this.servername);
         }
 
     }
